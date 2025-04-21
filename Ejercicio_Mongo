@@ -1,0 +1,15 @@
+#Parte 1: Consultas básicas
+#Encontrar pokemones tipo electric
+db.Pokemones.find ({Type1: "Electric"});
+#Pokemones con ataque mayor a 100 y su nombre
+db.Pokemones.find({ Attack: { $gt: 100 } }, { Name: 1, Attack: 1, _id: 0 });
+#Defensa entre 80 y 100
+db.Pokemones.find({ Defense: { $gte: 80, $lte: 100 }});
+#Parte 2: Agregaciones
+#Promedio de ataque según tipo1
+db.Pokemones.aggregate([{ $group: {_id: "$Type1", PromedioAtaque: {$avg: "$Attack" }}}]);
+#Pokemon con mayor HP según tipo
+db.Pokemones.aggregate([{ $group: {_id: "$Type1", maxHP: { $max: "$HP" }, pokemon: { $first: "$Name" }}}]);
+#Top 5 pokemones más rápidos
+db.pokemones.find().sort({ Speed: -1 }).limit(5);
+#Combinaciones
