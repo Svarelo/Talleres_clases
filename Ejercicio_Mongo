@@ -13,9 +13,19 @@ db.Pokemones.aggregate([{ $group: {_id: "$Type1", maxHP: { $max: "$HP" }, pokemo
 #Top 5 pokemones más rápidos
 db.Pokemones.find().sort({ Speed: -1 }).limit(5);
 #Combinaciones
-#Promedio de ataque tipo Water de mayor a menor !
+#!!!Promedio de ataque tipo Water de mayor a menor
 db.Pokemones.aggregate([{ $match: { Type1: "Water" }},{ $group: { _id: "$Type1", avgAttack: { $avg: "$Attack" }}},{ $sort: { avgAttack: -1 }}]);
 ##Si es promedio la formula arroja un solo valor, por lo que no se puede ordenar de mayor a menor
 db.Pokemones.aggregate([{ $match: { Type1: "Water" }}, { $group: { _id: "$Type1", PromedioAtaque: { $avg: "$Attack" }}}]);
 ##Tipo water ordenados de mayor a menor
 db.Pokemones.aggregate([{ $match: { Type1: "Water" }},{ $sort: { Attack: -1 } }]);
+#Pokemones con mayor ataque según generación de mayor a menor
+db.Pokemones.aggregate([{ $group: {_id: "$Generation",maxAttack: { $max: "$Attack" }, pokemon: { $first: "$Name" }}},{$sort: { maxAttack: -1 }}]);
+#Indexación
+#Indice Type1
+db.Pokemones.createIndex({ Type1: 1 });
+# Explain para análisis de rendimiento
+db.Pokemones.find({ Type1: "Water" }).explain("executionStats");
+#Indice compuesto y análisis de Type1 y Speed
+db.Pokemones.createIndex({ Type1: 1, Speed: -1 });
+db.Pokemones.find({ Type1: "Fire" }).sort({ Speed: -1 }).explain("executionStats");
